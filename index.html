@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demucs AI - Zene Szétválasztó</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="top-bar">
+    <div class="top-bar-content">
+        <h1>Demucs AI 🎧</h1>
+        <p>Professzionális sávszétválasztó stúdiók számára</p>
+    </div>
+</header>
+
+<div class="main-content">
+    <div class="container">
+
+        <div class="drop-zone" id="dropZone">
+            <div class="drop-zone-icon">🎵</div>
+            <p class="drop-zone-text" id="fileLabel">Húzd ide a fájlt, vagy kattints a tallózáshoz</p>
+            <p class="drop-zone-subtext">MP3 vagy WAV formátum</p>
+            <input type="file" id="fileInput" accept=".mp3,.wav" onchange="fileSelected()" />
+        </div>
+
+        <div class="model-selector" id="modelSelector" style="display:none;">
+            <label for="modelSelect">AI modell kiválasztása:</label>
+            <select id="modelSelect">
+                <option value="htdemucs">htdemucs – 4 sáv (Ének, Dob, Basszus, Egyéb)</option>
+                <option value="htdemucs_6s">htdemucs_6s – 6 sáv (+ Gitár, Zongora)</option>
+            </select>
+            <div id="modelHint" style="display:none;">
+                ⚠️ Ez a modell kb. 2× lassabb, de gitárt és zongorát is szétválaszt.
+            </div>
+        </div>
+
+        <audio id="audioPreview" controls></audio>
+
+        <button id="submitBtn" onclick="uploadFile()">Feldolgozás Indítása 🚀</button>
+
+        <div id="status"></div>
+
+        <div id="processingTime" style="display:none;"></div>
+
+        <div class="progress-bar-container" id="progressContainer">
+            <div class="progress-bar-fill" id="progressFill">0%</div>
+        </div>
+
+        <a id="downloadBtn" href="#" download>Kész! Sávok letöltése (.zip) 📥</a>
+        <br>
+        <button id="resetBtn" onclick="resetUI()">🔄 Új fájl feldolgozása</button>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
