@@ -1,0 +1,2 @@
+# demucs
+allamvizsga ai savszetvalaszto
