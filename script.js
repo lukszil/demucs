@@ -85,7 +85,6 @@ async function uploadFile() {
     const modellNev = modelSelect.options[modelSelect.selectedIndex].text;
 
     const formData = new FormData();
-    const fajlNeve = fileInput.files[0].name;
     formData.append("file", fileInput.files[0]);
     formData.append("modell", valasztottModell);
 
@@ -115,16 +114,20 @@ async function uploadFile() {
     }, 1000);
 
     try {
-        await fetch(`${API_BASE}/upload/`, { method: "POST", body: formData });
-        startPolling(fajlNeve);
+        const response = await fetch(`${API_BASE}/upload/`, { method: "POST", body: formData });
+        const result = await response.json();
+
+
+        const egyediId = result.fajl_neve;
+        startPolling(egyediId);
+
     } catch (error) {
         clearInterval(progressInterval);
         showError("Hálózat vagy szerver hiba történt! Elindítottad a backendet?");
     }
 }
 
-
-function startPolling(filename) {
+function startPolling(egyediId) {
     const statusDiv = document.getElementById('status');
     const downloadBtn = document.getElementById('downloadBtn');
     const resetBtn = document.getElementById('resetBtn');
@@ -144,7 +147,7 @@ function startPolling(filename) {
         }
 
         try {
-            const response = await fetch(`${API_BASE}/status/${filename}`);
+            const response = await fetch(`${API_BASE}/status/${egyediId}`);
             const result = await response.json();
 
             consecutiveErrors = 0;
