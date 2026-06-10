@@ -58,11 +58,8 @@ def run_demucs(file_path: str, egyedi_id: str, modell: str = "htdemucs"):
         feldolgozas_allapot[egyedi_id] = "hiba"
         return
 
-    # A Demucs a FÁJLNÉV alapján hozza létre a mappát, nem az egyedi ID alapján
-    # Ezért az eredeti fájlnévből (timestamp nélkül) kell keresni
     fajlnev_kiterjesztes_nelkul = os.path.splitext(os.path.basename(file_path))[0]
 
-    # Megkeressük melyik modell mappa jött létre
     demucs_kimenet_mappa = None
     for modell_mappa in os.listdir("szetvalasztott_zenek"):
         lehetseges = f"szetvalasztott_zenek/{modell_mappa}/{fajlnev_kiterjesztes_nelkul}"
@@ -76,7 +73,6 @@ def run_demucs(file_path: str, egyedi_id: str, modell: str = "htdemucs"):
         feldolgozas_allapot[egyedi_id] = "hiba"
         return
 
-    # A ZIP neve az egyedi ID — így nem keveredik össze régi feldolgozásokkal
     zip_cel_utvonal = f"kesz_zipek/{egyedi_id}"
     shutil.make_archive(zip_cel_utvonal, 'zip', demucs_kimenet_mappa)
     feldolgozas_allapot[egyedi_id] = "kesz"
@@ -93,7 +89,6 @@ def run_demucs(file_path: str, egyedi_id: str, modell: str = "htdemucs"):
 
 @app.on_event("startup")
 async def startup_cleanup():
-    """Indításkor törli az 1 óránál régebbi ideiglenes fájlokat."""
     now = time.time()
     torolve = 0
 
@@ -125,7 +120,6 @@ async def upload_audio(
     if modell not in TAMOGATOTT_MODELLEK:
         return {"hiba": f"Ismeretlen modell: {modell}. Valassz: {TAMOGATOTT_MODELLEK}"}
 
-    # Egyedi ID = fájlnév + timestamp — minden feltöltés egyedi lesz
     nev_resz, kiterjesztes = os.path.splitext(file.filename)
     timestamp = int(time.time())
     egyedi_fajlnev = f"{nev_resz}_{timestamp}{kiterjesztes}"
@@ -138,7 +132,6 @@ async def upload_audio(
     feldolgozas_allapot[egyedi_id] = "folyamatban"
     background_tasks.add_task(run_demucs, file_location, egyedi_id, modell)
 
-    # Visszaküldjük az egyedi ID-t — a frontend ezt figyeli
     return {
         "uzenet": "Sikeres feltoltes!",
         "fajl_neve": egyedi_id,
@@ -148,7 +141,6 @@ async def upload_audio(
 
 @app.get("/status/{egyedi_id}")
 def check_status(egyedi_id: str):
-    # Egyedi ID alapján keresünk ZIP-et — nem lesz félreértés régi fájlokkal
     zip_utvonal = f"kesz_zipek/{egyedi_id}.zip"
     if os.path.exists(zip_utvonal):
         return {
