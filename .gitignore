@@ -1,3 +1,8 @@
+# Demucs ideiglenes mappák
+feltoltott_zenek/
+szetvalasztott_zenek/
+kesz_zipek/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
